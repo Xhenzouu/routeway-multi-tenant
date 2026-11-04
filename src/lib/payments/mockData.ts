@@ -106,7 +106,7 @@ export function mockProcessRun(tenantId: TenantId, verification?: WebhookVerific
       { step: STEPS[1], status: "skipped", durationMs: 0 },
       { step: STEPS[2], status: "skipped", durationMs: 0 },
       { step: STEPS[3], status: "skipped", durationMs: 0 },
-      { step: STEPS[4], status: "success", durationMs: d() },
+      { step: STEPS[4], status: "skipped", durationMs: 0 },
       { step: STEPS[5], status: "success", durationMs: d() },
     ];
   }
