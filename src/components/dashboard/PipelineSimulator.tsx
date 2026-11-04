@@ -43,22 +43,21 @@ export function PipelineSimulator({ steps, states, running, onRun, onReset, onIn
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
-            variant="outline"
-            className="bg-transparent shadow-none"
+            variant="pipeline-secondary"
             onClick={onInspect}
           >
             Inspect Webhook
           </Button>
           <Button
+            variant="pipeline-secondary"
             onClick={onReset}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
           >
             Reset Demo
           </Button>
           <Button
             onClick={onRun}
             disabled={running}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            className="rounded-md bg-primary px-4 py-2 font-sans text-sm font-semibold text-primary-foreground shadow-none hover:bg-primary/90"
           >
             {running ? "Processing…" : "Process Payment"}
           </Button>
