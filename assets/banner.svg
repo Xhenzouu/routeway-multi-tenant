@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Routeway: a Stripe webhook routed per tenant, with isolated credentials and isolated audit logs">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#8a857b"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="320" fill="#1a1918"/>
+  <rect x="0" y="0" width="10" height="320" fill="#ec4899"/>
+
+  <!-- Title -->
+  <text x="64" y="138" font-family="Georgia, 'Times New Roman', serif" font-size="60" font-weight="700" fill="#f5f2ec">Routeway</text>
+  <text x="64" y="186" font-family="Inter, Arial, sans-serif" font-size="22" fill="#b9b4aa">Multi-tenant payment routing with isolated</text>
+  <text x="64" y="216" font-family="Inter, Arial, sans-serif" font-size="22" fill="#b9b4aa">credentials, failures, and audit logs</text>
+  <rect x="64" y="244" width="120" height="4" rx="2" fill="#ec4899"/>
+
+  <g font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">
+    <!-- Webhook node -->
+    <rect x="640" y="124" width="110" height="64" rx="10" fill="#242220" stroke="#ec4899" stroke-width="2"/>
+    <text x="695" y="152" text-anchor="middle" fill="#f5f2ec">Webhook</text>
+    <text x="695" y="171" text-anchor="middle" font-size="12" font-weight="400" fill="#8a857b">tenant_id</text>
+
+    <!-- Routing lines -->
+    <path d="M750 156 L830 84" stroke="#8a857b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+    <path d="M750 156 L830 156" stroke="#8a857b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+    <path d="M750 156 L830 228" stroke="#8a857b" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- Tenant A -->
+    <rect x="836" y="56" width="150" height="56" rx="10" fill="#242220" stroke="#34d399" stroke-width="2"/>
+    <text x="911" y="80" text-anchor="middle" fill="#f5f2ec">Tenant A</text>
+    <text x="911" y="98" text-anchor="middle" font-size="12" font-weight="400" fill="#34d399">success</text>
+
+    <!-- Tenant B -->
+    <rect x="836" y="128" width="150" height="56" rx="10" fill="#242220" stroke="#fb923c" stroke-width="2"/>
+    <text x="911" y="152" text-anchor="middle" fill="#f5f2ec">Tenant B</text>
+    <text x="911" y="170" text-anchor="middle" font-size="12" font-weight="400" fill="#fb923c">Slack failed, audited</text>
+
+    <!-- Tenant C -->
+    <rect x="836" y="200" width="150" height="56" rx="10" fill="#242220" stroke="#5b5750" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="911" y="224" text-anchor="middle" fill="#b9b4aa">Tenant C</text>
+    <text x="911" y="242" text-anchor="middle" font-size="12" font-weight="400" fill="#8a857b">not found, skipped</text>
+
+    <!-- Audit logs -->
+    <path d="M986 84 L1040 84" stroke="#8a857b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+    <path d="M986 156 L1040 156" stroke="#8a857b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+    <rect x="1046" y="64" width="110" height="40" rx="8" fill="#2d2a27" stroke="#3a3733"/>
+    <text x="1101" y="89" text-anchor="middle" font-size="13" fill="#f5f2ec">Audit A</text>
+    <rect x="1046" y="136" width="110" height="40" rx="8" fill="#2d2a27" stroke="#3a3733"/>
+    <text x="1101" y="161" text-anchor="middle" font-size="13" fill="#f5f2ec">Audit B</text>
+  </g>
+</svg>
