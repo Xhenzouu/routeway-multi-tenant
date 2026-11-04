@@ -40,6 +40,9 @@
   --color-control-secondary-border: var(--control-secondary-border);
   --color-control-secondary-foreground: var(--control-secondary-foreground);
   --color-control-secondary-hover: var(--control-secondary-hover);
+  --color-control-dark-surface: var(--control-dark-surface);
+  --color-control-dark-border: var(--control-dark-border);
+  --color-control-dark-hover: var(--control-dark-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -78,6 +81,9 @@
   --control-secondary-border: oklch(0.321093 0 0);
   --control-secondary-foreground: oklch(1 0 0);
   --control-secondary-hover: oklch(0.321093 0 0);
+  --control-dark-surface: oklch(0.34846 0 0);
+  --control-dark-border: oklch(0.449533 0 0);
+  --control-dark-hover: oklch(0.386654 0 0);
   --overlay: oklch(0 0 0);
   --background: oklch(0.985 0.002 247.84);
   --foreground: oklch(0.21 0.034 264.67);

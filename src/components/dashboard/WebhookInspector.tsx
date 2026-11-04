@@ -97,7 +97,7 @@ function RequestDetails({ run, tenant, running, onResend }: { run: WebhookRun | 
       <h3 className="font-serif text-xl">Tamper controls</h3>
       <div title={!tenant.active ? "No signing secret: tenant inactive" : undefined} className="flex items-center justify-between gap-3">
         <label htmlFor="tamper-payload">Tamper with payload</label>
-        <Switch id="tamper-payload" checked={tamper} disabled={!tenant.active || replaying || initializing} onCheckedChange={setTamper} />
+        <Switch id="tamper-payload" className="dark:data-[state=unchecked]:bg-control-dark-border" checked={tamper} disabled={!tenant.active || replaying || initializing} onCheckedChange={setTamper} />
       </div>
       <div title={!tenant.active ? "No signing secret: tenant inactive" : undefined}>
         <Button variant="outline" className="w-full bg-transparent shadow-none" disabled={!tenant.active || replaying || initializing} onClick={replay}>Replay with old timestamp</Button>
