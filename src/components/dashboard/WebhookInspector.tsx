@@ -25,7 +25,7 @@ function CheckRow({ label, status }: { label: string; status: VerificationStatus
   </li>;
 }
 
-function RequestDetails({ run, tenant, running, onResend }: { run?: WebhookRun; tenant: Tenant; running: boolean; onResend: Props["onResend"] }) {
+function RequestDetails({ run, tenant, running, onResend }: { run: WebhookRun | undefined; tenant: Tenant; running: boolean; onResend: Props["onResend"] }) {
   const [request, setRequest] = useState<WebhookRequest>(() => run ? structuredClone(run.request) : {
     rawBody: createMockPayload(tenant.id),
     headers: { "Content-Type": "application/json", "Stripe-Signature": "" },
