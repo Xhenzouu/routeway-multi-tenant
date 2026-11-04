@@ -1,10 +1,10 @@
-// @vitest-environment node
-import { describe, expect, it } from "vitest";
-import { createHmac } from "node:crypto";
+import { describe, expect, it, vi } from "vitest";
+import { createHmac, webcrypto } from "node:crypto";
 import { computeSignature, signRequest, verifyRequest } from "./signature";
 import { createMockRequest, mockProcessRun, tenants } from "./payments/mockData";
 
 const now = 1_800_000_000;
+vi.stubGlobal("crypto", webcrypto);
 const body = JSON.stringify({ data: { object: { metadata: { tenant_id: "tenant_a" }, amount: 5000 } } });
 
 describe("Webhook signature rules", () => {
