@@ -45,8 +45,13 @@ describe("Webhook signature rules", () => {
     expect(result).toMatchObject({ tenantResolved: "passed", secretLoaded: "skipped", timestampValid: "skipped", signatureMatches: "skipped", inactive: true });
     expect(mockProcessRun("tenant_c", result).map((step) => step.status)).toEqual(["warning", "skipped", "skipped", "skipped", "skipped", "success"]);
   });
-  it("does not load another tenant's secret when metadata is changed", async () => {
-    const request = await signRequest(body.replace("tenant_a", "tenant_b"), "whsec_mock_a", now);
-    expect((await verifyRequest(request, tenants, "tenant_a", now)).secretLoaded).toBe("skipped");
+  it("uses the selected tenant secret and rejects changed metadata", async () => {
+    const original = await signRequest(body, "whsec_mock_a", now);
+    const request = { ...original, rawBody: body.replace("tenant_a", "tenant_b") };
+    expect(await verifyRequest(request, tenants, "tenant_a", now)).toMatchObject({ tenantResolved: "failed", signatureMatches: "failed", verified: false });
+  });
+  it("still reports failed HMAC for malformed JSON edits", async () => {
+    const original = await signRequest(body, "whsec_mock_a", now);
+    expect(await verifyRequest({ ...original, rawBody: "{" }, tenants, "tenant_a", now)).toMatchObject({ tenantResolved: "failed", signatureMatches: "failed", verified: false });
   });
 });

@@ -23,23 +23,24 @@ export async function verifyRequest(request: WebhookRequest, tenants: Tenant[], 
     tenantId = JSON.parse(request.rawBody)?.data?.object?.metadata?.tenant_id;
   } catch { /* Invalid JSON cannot resolve a tenant. */ }
   const tenant = tenants.find((entry) => entry.id === tenantId && entry.id === expectedTenant);
+  const selectedTenant = tenants.find((entry) => entry.id === expectedTenant);
   const result: WebhookVerification = {
     tenantResolved: tenant ? "passed" : "failed",
     secretLoaded: "skipped",
     timestampValid: "skipped",
     signatureMatches: "skipped",
     verified: false,
-    inactive: Boolean(tenant && !tenant.active),
+    inactive: Boolean(selectedTenant && !selectedTenant.active),
   };
-  if (!tenant?.active) return result;
+  if (!selectedTenant?.active) return result;
   result.secretLoaded = "passed";
   const parts = request.headers["Stripe-Signature"].split(",");
   const timestampText = parts.find((part) => part.startsWith("t="))?.slice(2);
   const timestamp = timestampText && /^\d+$/.test(timestampText) ? Number(timestampText) : NaN;
   const original = parts.filter((part) => part.startsWith("v1=")).map((part) => part.slice(3));
   result.timestampValid = Number.isFinite(timestamp) && Math.abs(now - timestamp) <= 300 ? "passed" : "failed";
-  const computed = Number.isFinite(timestamp) ? await computeSignature(tenant.signingSecret, timestamp, request.rawBody) : null;
+  const computed = Number.isFinite(timestamp) ? await computeSignature(selectedTenant.signingSecret, timestamp, request.rawBody) : null;
   result.signatureMatches = computed && original.includes(computed) ? "passed" : "failed";
-  result.verified = result.timestampValid === "passed" && result.signatureMatches === "passed";
+  result.verified = result.tenantResolved === "passed" && result.timestampValid === "passed" && result.signatureMatches === "passed";
   return result;
 }
