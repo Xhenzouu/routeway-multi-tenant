@@ -8,6 +8,12 @@ vi.stubGlobal("crypto", webcrypto);
 const body = JSON.stringify({ data: { object: { metadata: { tenant_id: "tenant_a" }, amount: 5000 } } });
 
 describe("Webhook signature rules", () => {
+  it.each(["tenant_a", "tenant_b", "tenant_c"] as const)("populates a default request for %s before any payment run", async (id) => {
+    const request = await createMockRequest(id);
+    const payload = JSON.parse(request.rawBody);
+    expect(payload).toMatchObject({ id: "evt_mock_000", type: "payment_intent.succeeded", data: { object: { amount: 5000, currency: "usd", metadata: { tenant_id: id } } } });
+    expect(await verifyRequest(request, tenants, id)).toMatchObject({ tenantResolved: "passed", verified: id !== "tenant_c", inactive: id === "tenant_c" });
+  });
   it("computes real HMAC-SHA256 over timestamp dot raw body", async () => {
     expect(await computeSignature("whsec_mock_a", now, body)).toBe(createHmac("sha256", "whsec_mock_a").update(`${now}.${body}`).digest("hex"));
   });

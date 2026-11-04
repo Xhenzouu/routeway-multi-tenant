@@ -11,3 +11,4 @@
 
 - Webhook verification is browser-only Web Crypto with mock tenant secrets, so this simulator never requires real credentials or server calls.
 - Keep immutable completed request snapshots per tenant in dashboard state; inspector edits are separate drafts and only resend creates a new run.
+- When no completed request exists, the inspector creates its own tenant-scoped in-memory default draft, never a completed run or audit row, so inspection does not process a payment.

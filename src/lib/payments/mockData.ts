@@ -125,16 +125,20 @@ export function mockProcessRun(tenantId: TenantId, verification?: WebhookVerific
   );
 }
 
-export async function createMockRequest(tenantId: TenantId, runId: number) {
-  const tenant = tenants.find((entry) => entry.id === tenantId);
-  if (!tenant) throw new Error("Unknown mock tenant");
+export function createMockPayload(tenantId: TenantId, runId = 0) {
   const id = String(runId).padStart(3, "0");
-  const rawBody = JSON.stringify({
+  return JSON.stringify({
     id: `evt_mock_${id}`,
     object: "event",
     type: "payment_intent.succeeded",
     data: { object: { id: `pi_mock_${id}`, amount: 5000, currency: "usd", metadata: { tenant_id: tenantId } } },
   }, null, 2);
+}
+
+export async function createMockRequest(tenantId: TenantId, runId = 0) {
+  const tenant = tenants.find((entry) => entry.id === tenantId);
+  if (!tenant) throw new Error("Unknown mock tenant");
+  const rawBody = createMockPayload(tenantId, runId);
   // Inactive requests have no signature because no signing secret is loaded.
   if (!tenant.active) return { rawBody, headers: { "Content-Type": "application/json", "Stripe-Signature": `t=${Math.floor(Date.now() / 1000)},v1=` } };
   return signRequest(rawBody, tenant.signingSecret);
