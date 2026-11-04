@@ -1,12 +1,12 @@
 import type { AuditLogs, StepName, StepResult, Tenant, TenantId } from "./types";
 
-export const STEPS: StepName[] = [
+export const STEPS = [
   "Lookup Tenant Config",
   "Fetch Payment Details",
   "Post to Tenant Slack",
   "Write Audit Row",
   "Respond to Stripe 200",
-];
+] as const satisfies readonly StepName[];
 
 export const SLACK_ERROR =
   'Unexpected Slack response: "---title: Slack developer docs description: Build apps, workflows and integrations on the Slack platform. This endpoint returned HTML documentation instead of the expected \\"ok\\" body."';

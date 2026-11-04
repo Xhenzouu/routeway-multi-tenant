@@ -79,9 +79,9 @@ function Dashboard() {
     timers.current.push(
       window.setTimeout(() => {
         setRunning(false);
-        if (result[3].status !== "success") return;
+        if (result[3]?.status !== "success") return;
         const id = String(n).padStart(3, "0");
-        const slack = result[2];
+        const slack = result[2]!;
         setLogs((l) => ({
           ...l,
           [tenantId]: [
