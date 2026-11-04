@@ -42,7 +42,14 @@ export function PipelineSimulator({ steps, states, running, onRun, onReset, onIn
           <p className="text-sm text-muted-foreground">Simulate a Stripe webhook routed to this tenant.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {canInspect && <Button variant="outline" className="bg-transparent shadow-none" onClick={onInspect}>Inspect Webhook</Button>}
+          <Button
+            variant="outline"
+            className="bg-transparent shadow-none"
+            disabled={!canInspect}
+            onClick={onInspect}
+          >
+            Inspect Webhook
+          </Button>
           <Button
             onClick={onReset}
             className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
