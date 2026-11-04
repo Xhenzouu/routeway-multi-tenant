@@ -45,7 +45,6 @@ export function PipelineSimulator({ steps, states, running, onRun, onReset, onIn
           <Button
             variant="outline"
             className="bg-transparent shadow-none"
-            disabled={!canInspect}
             onClick={onInspect}
           >
             Inspect Webhook

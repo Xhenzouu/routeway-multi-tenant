@@ -111,7 +111,11 @@ export function WebhookInspector({ open, onOpenChange, tenant, runs, dark, runni
             <Button variant="ghost" size="icon" aria-label="Next request" title="Next request" disabled={index >= runs.length - 1} onClick={() => setIndex((value) => value + 1)}><ChevronRight /></Button>
           </div>
         </div>
-        {run && <RequestDetails key={`${tenant.id}-${run.id}`} run={run} tenant={tenant} running={running} onResend={onResend} />}
+        {run ? <RequestDetails key={`${tenant.id}-${run.id}`} run={run} tenant={tenant} running={running} onResend={onResend} /> : (
+          <p role="status" className="text-sm text-muted-foreground">
+            No webhook captured yet. Run Process Payment to generate a request to inspect.
+          </p>
+        )}
       </Dialog.Content>
     </div></Dialog.Portal>
   </Dialog.Root>;
