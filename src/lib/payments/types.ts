@@ -4,10 +4,12 @@ export type StepStatus = "pending" | "running" | "success" | "failed" | "skipped
 
 export type StepName =
   | "Lookup Tenant Config"
+  | "Verify Signature"
   | "Fetch Payment Details"
   | "Post to Tenant Slack"
   | "Write Audit Row"
-  | "Respond to Stripe 200";
+  | "Respond to Stripe 200"
+  | "Respond to Stripe 400";
 
 export interface Tenant {
   id: TenantId;
@@ -17,6 +19,7 @@ export interface Tenant {
   slackWebhookUrl: string;
   slackChannel: string;
   active: boolean;
+  signingSecret: string;
 }
 
 export interface StepResult {
@@ -40,3 +43,25 @@ export interface AuditRow {
 }
 
 export type AuditLogs = Record<TenantId, AuditRow[]>;
+
+export interface WebhookRequest {
+  headers: { "Content-Type": string; "Stripe-Signature": string };
+  rawBody: string;
+}
+
+export type VerificationStatus = "passed" | "failed" | "skipped";
+
+export interface WebhookVerification {
+  tenantResolved: VerificationStatus;
+  secretLoaded: VerificationStatus;
+  timestampValid: VerificationStatus;
+  signatureMatches: VerificationStatus;
+  verified: boolean;
+  inactive: boolean;
+}
+
+export interface WebhookRun {
+  id: number;
+  request: WebhookRequest;
+  steps: StepResult[];
+}
