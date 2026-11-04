@@ -50,6 +50,7 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-skipped: var(--skipped);
+  --color-overlay: var(--overlay);
   --font-serif: Georgia, "Times New Roman", serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --color-chart-1: var(--chart-1);
@@ -69,6 +70,7 @@
 
 :root {
   --radius: 0.375rem;
+  --overlay: oklch(0 0 0);
   --background: oklch(0.985 0.002 247.84);
   --foreground: oklch(0.21 0.034 264.67);
   --card: oklch(1 0 0);
