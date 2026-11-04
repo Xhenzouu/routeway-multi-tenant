@@ -56,7 +56,7 @@ export function PipelineSimulator({ steps, states, running, onRun, onReset }: Pr
 
       <ol className="mt-6 grid gap-3 lg:grid-cols-[repeat(5,minmax(0,1fr))]">
         {STEPS.map((name, i) => {
-          const s = states[i];
+          const s: StepStatus = states[i] ?? "pending";
           const r = steps?.[i];
           const shown = s !== "pending" && s !== "running";
           return (
