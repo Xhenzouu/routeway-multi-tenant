@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Webhook verification is browser-only Web Crypto with mock tenant secrets, so this simulator never requires real credentials or server calls.
+- Keep immutable completed request snapshots per tenant in dashboard state; inspector edits are separate drafts and only resend creates a new run.

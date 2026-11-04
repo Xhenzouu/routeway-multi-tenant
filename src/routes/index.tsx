@@ -5,8 +5,10 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TenantConfigCard } from "@/components/dashboard/TenantConfigCard";
 import { PipelineSimulator } from "@/components/dashboard/PipelineSimulator";
 import { AuditTable } from "@/components/dashboard/AuditTable";
-import { cloneInitialLogs, mockProcessRun, tenants } from "@/lib/payments/mockData";
-import type { AuditLogs, StepResult, StepStatus, TenantId } from "@/lib/payments/types";
+import { WebhookInspector } from "@/components/dashboard/WebhookInspector";
+import { cloneInitialLogs, createMockRequest, mockProcessRun, STEPS, tenants } from "@/lib/payments/mockData";
+import { verifyRequest } from "@/lib/signature";
+import type { AuditLogs, StepResult, StepStatus, TenantId, WebhookRequest, WebhookRun } from "@/lib/payments/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +24,8 @@ export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
-const idle: StepStatus[] = Array(5).fill("pending");
+const idle: StepStatus[] = Array(STEPS.length).fill("pending");
+const emptyRuns = (): Record<TenantId, WebhookRun[]> => ({ tenant_a: [], tenant_b: [], tenant_c: [] });
 
 function Dashboard() {
   const [dark, setDark] = useState(true);
@@ -33,6 +36,11 @@ function Dashboard() {
   const [steps, setSteps] = useState<StepResult[] | null>(null);
   const [states, setStates] = useState<StepStatus[]>(idle);
   const [running, setRunning] = useState(false);
+  const [requests, setRequests] = useState(emptyRuns);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [runError, setRunError] = useState<string | null>(null);
+  const generation = useRef(0);
+  const busy = useRef(false);
   const timers = useRef<number[]>([]);
 
   const clearTimers = () => {
@@ -48,24 +56,45 @@ function Dashboard() {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  useEffect(() => clearTimers, []);
+  useEffect(() => () => { generation.current += 1; clearTimers(); }, []);
 
   const resetRun = () => {
     clearTimers();
+    generation.current += 1;
+    busy.current = false;
     setSteps(null);
     setStates(idle);
     setRunning(false);
+    setRunError(null);
   };
 
-  const run = () => {
+  const run = async (suppliedRequest?: WebhookRequest) => {
+    if (busy.current) return;
+    busy.current = true;
     clearTimers();
+    const token = ++generation.current;
     const tenantId = selected;
-    const result = mockProcessRun(tenantId);
     const n = counter;
     setCounter(n + 1);
-    setSteps(result);
+    setSteps(null);
     setStates(idle);
     setRunning(true);
+    setRunError(null);
+    let request: WebhookRequest;
+    let result: StepResult[];
+    try {
+      request = suppliedRequest ? structuredClone(suppliedRequest) : await createMockRequest(tenantId, n);
+      const verification = await verifyRequest(request, tenants, tenantId);
+      if (token !== generation.current) return;
+      result = mockProcessRun(tenantId, verification);
+    } catch {
+      if (token !== generation.current) return;
+      busy.current = false;
+      setRunning(false);
+      setRunError("Could not verify the mock request. Please try again.");
+      return;
+    }
+    setSteps(result);
     let t = 0;
     result.forEach((r, i) => {
       timers.current.push(
@@ -79,9 +108,12 @@ function Dashboard() {
     timers.current.push(
       window.setTimeout(() => {
         setRunning(false);
-        if (result[3]?.status !== "success") return;
+        busy.current = false;
+        setRequests((previous) => ({ ...previous, [tenantId]: [...previous[tenantId], { id: n, request: structuredClone(request), steps: result }] }));
+        if (result[4]?.status !== "success") return;
         const id = String(n).padStart(3, "0");
-        const slack = result[2]!;
+        const slack = result[3];
+        if (!slack) return;
         setLogs((l) => ({
           ...l,
           [tenantId]: [
@@ -102,7 +134,8 @@ function Dashboard() {
     );
   };
 
-  const tenant = tenants.find((t) => t.id === selected)!;
+  const tenant = tenants.find((t) => t.id === selected);
+  if (!tenant) return null;
 
   return (
     <div className={dark ? "dark" : ""}>
@@ -113,6 +146,12 @@ function Dashboard() {
           onSelect={(id) => {
             setSelected(id);
             resetRun();
+            setInspectorOpen(false);
+            const lastRun = requests[id].at(-1);
+            if (lastRun) {
+              setSteps(lastRun.steps);
+              setStates(lastRun.steps.map((step) => step.status));
+            }
           }}
           collapsed={collapsed}
           onToggle={() => setCollapsed((c) => !c)}
@@ -134,17 +173,23 @@ function Dashboard() {
               steps={steps}
               states={states}
               running={running}
-              onRun={run}
+              onRun={() => { void run(); }}
+              canInspect={!running && requests[selected].length > 0}
+              onInspect={() => setInspectorOpen(true)}
               onReset={() => {
                 resetRun();
                 setLogs(cloneInitialLogs());
                 setCounter(4);
+                setRequests(emptyRuns());
+                setInspectorOpen(false);
               }}
             />
+            {runError && <p role="alert" className="text-sm text-danger">{runError}</p>}
             <AuditTable rows={logs[selected]} />
           </div>
         </main>
       </div>
+      <WebhookInspector key={selected} open={inspectorOpen} onOpenChange={setInspectorOpen} tenant={tenant} runs={requests[selected]} dark={dark} running={running} onResend={(request) => { void run(request); }} />
     </div>
   );
 }
